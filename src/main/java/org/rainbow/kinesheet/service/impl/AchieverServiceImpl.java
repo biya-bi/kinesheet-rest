@@ -3,12 +3,14 @@ package org.rainbow.kinesheet.service.impl;
 import org.rainbow.kinesheet.model.Achiever;
 import org.rainbow.kinesheet.repository.AchieverRepository;
 import org.rainbow.kinesheet.service.AchieverService;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
-class AchieverServiceImpl implements AchieverService {
+class AchieverServiceImpl implements AchieverService, TokenService {
+
+    private static final String CACHE_NAME = "Achievers";
+    private static final String CACHE_KEY = "#root.target.token.tokenAttributes['email']";
 
     private final AchieverRepository achieverRepository;
 
@@ -16,21 +18,20 @@ class AchieverServiceImpl implements AchieverService {
         this.achieverRepository = achieverRepository;
     }
 
+    @Cacheable(value = CACHE_NAME, key = CACHE_KEY)
     @Override
     public Achiever getCurrent() {
-        var context = SecurityContextHolder.getContext();
-        var token = (JwtAuthenticationToken) context.getAuthentication();
-        var tokenAttributes = token.getTokenAttributes();
+        var tokenAttributes = getToken().getTokenAttributes();
         var email = (String) tokenAttributes.get("email");
         var achiever = achieverRepository.findByEmail(email);
-        if (achiever == null) {
-            var name = (String) tokenAttributes.get("name");
-            var newAchiever = new Achiever();
-            newAchiever.setEmail(email);
-            newAchiever.setName(name);
-            return achieverRepository.save(newAchiever);
+        if (achiever != null) {
+            return achiever;
         }
-        return achiever;
+        var name = (String) tokenAttributes.get("name");
+        achiever = new Achiever();
+        achiever.setEmail(email);
+        achiever.setName(name);
+        return achieverRepository.save(achiever);
     }
 
 }

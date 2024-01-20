@@ -1,16 +1,12 @@
 package org.rainbow.kinesheet.controller;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.rainbow.kinesheet.model.Achiever;
 import org.rainbow.kinesheet.model.Objective;
-import org.rainbow.kinesheet.repository.AchieverRepository;
 import org.rainbow.kinesheet.repository.ObjectiveRepository;
 import org.rainbow.kinesheet.service.AchieverService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +27,7 @@ class ObjectiveController {
     }
 
     @PostMapping
-    ResponseEntity<Objective> create(@RequestBody Objective objective, UriComponentsBuilder ucb,
-            JwtAuthenticationToken token) {
+    ResponseEntity<Objective> create(@RequestBody Objective objective, UriComponentsBuilder ucb) {
         Achiever achiever = achieverService.getCurrent();
 
         Objective newObjective = new Objective();
@@ -52,4 +47,5 @@ class ObjectiveController {
     ResponseEntity<Iterable<Objective>> findAll() {
         return ResponseEntity.ok().body(objectiveRepository.findAll());
     }
+
 }
