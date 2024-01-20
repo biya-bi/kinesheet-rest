@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,10 +20,11 @@ public class Objective {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
     private String title;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "achiever_id")
+    @JoinColumn(name = "achiever_id", nullable = false)
     private Achiever achiever;
 }
