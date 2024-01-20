@@ -17,13 +17,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class KinesheetAuthenticationEntryPoint implements AuthenticationEntryPoint {
+class ProblemDetailAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final AuthenticationEntryPoint delegate = new BearerTokenAuthenticationEntryPoint();
 
     private final ObjectMapper mapper;
 
-    public KinesheetAuthenticationEntryPoint(ObjectMapper mapper) {
+    ProblemDetailAuthenticationEntryPoint(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
