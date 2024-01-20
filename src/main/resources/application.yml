@@ -1,0 +1,17 @@
+logging:
+  level:
+    org.springframework.security: TRACE
+
+kinesheet:
+  web:
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+          audiences: ${GOOGLE_JWT_AUDIENCES}
