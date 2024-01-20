@@ -5,6 +5,7 @@ import java.net.URI;
 import org.rainbow.kinesheet.model.Achiever;
 import org.rainbow.kinesheet.model.Objective;
 import org.rainbow.kinesheet.repository.ObjectiveRepository;
+import org.rainbow.kinesheet.request.CreateObjectiveRequest;
 import org.rainbow.kinesheet.service.AchieverService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,13 +28,13 @@ class ObjectiveController {
     }
 
     @PostMapping
-    ResponseEntity<Objective> create(@RequestBody Objective objective, UriComponentsBuilder ucb) {
+    ResponseEntity<Objective> create(@RequestBody CreateObjectiveRequest request, UriComponentsBuilder ucb) {
         Achiever achiever = achieverService.getCurrent();
 
         Objective newObjective = new Objective();
 
         newObjective.setAchiever(achiever);
-        newObjective.setTitle(objective.getTitle());
+        newObjective.setTitle(request.getTitle());
 
         Objective savedObjective = objectiveRepository.save(newObjective);
 
