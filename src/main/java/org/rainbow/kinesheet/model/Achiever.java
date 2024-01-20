@@ -1,28 +1,27 @@
 package org.rainbow.kinesheet.model;
 
+import java.util.Set;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Entity
 @Data
-public class Objective {
+public class Achiever {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String title;
+    private String name;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "achiever_id")
-    private Achiever achiever;
+    private String email;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "achiever")
+    private Set<Objective> objectives;
 }

@@ -1,46 +1,41 @@
 package org.rainbow.kinesheet.controller;
 
-import java.util.Arrays;
+import java.net.URI;
 import java.util.UUID;
 
 import org.rainbow.kinesheet.model.Objective;
-import org.rainbow.kinesheet.model.User;
+import org.rainbow.kinesheet.model.Achiever;
+import org.rainbow.kinesheet.repository.ObjectiveRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/objectives")
 class ObjectiveController {
 
+    private final ObjectiveRepository objectiveRepository;
+
+    ObjectiveController(ObjectiveRepository objectiveRepository) {
+        this.objectiveRepository = objectiveRepository;
+    }
+
+    @PostMapping
+    ResponseEntity<Objective> create(@RequestBody Objective objective, UriComponentsBuilder ucb) {
+        Objective savedObjective = objectiveRepository.save(objective);
+
+        URI location = ucb.path("/objectives/{id}")
+                .buildAndExpand(savedObjective.getId()).toUri();
+
+        return ResponseEntity.created(location).body(savedObjective);
+    }
+
     @GetMapping
     ResponseEntity<Iterable<Objective>> findAll() {
-        var user1 = new User();
-        user1.setId(UUID.randomUUID().toString());
-        user1.setEmail("user1@domain.com");
-        user1.setName("user1");
-
-        var user2 = new User();
-        user2.setId(UUID.randomUUID().toString());
-        user2.setEmail("user2@domain.com");
-        user2.setName("user2");
-
-        var objective1 = new Objective();
-        objective1.setId(UUID.randomUUID().toString());
-        objective1.setTitle("Read Java 9 Modularity");
-        objective1.setUser(user1);
-
-        var objective2 = new Objective();
-        objective2.setId(UUID.randomUUID().toString());
-        objective2.setTitle("Learn about CORS");
-        objective2.setUser(user1);
-
-        var objective3 = new Objective();
-        objective3.setId(UUID.randomUUID().toString());
-        objective3.setTitle("Workout thrice weekly");
-        objective3.setUser(user2);
-
-        return ResponseEntity.ok().body(Arrays.asList(objective1, objective2, objective3));
+        return ResponseEntity.ok().body(objectiveRepository.findAll());
     }
 }
