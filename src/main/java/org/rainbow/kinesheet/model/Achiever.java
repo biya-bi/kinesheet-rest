@@ -3,9 +3,12 @@ package org.rainbow.kinesheet.model;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +28,7 @@ public class Achiever {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "achiever")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "achiever",fetch = FetchType.LAZY)
     private Set<Objective> objectives;
 }

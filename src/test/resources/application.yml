@@ -1,0 +1,20 @@
+logging:
+  level:
+    org.springframework.security: TRACE
+
+kinesheet:
+  web:
+    cors:
+      allowed-origins: http://localhost:4200
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://sample.issuer.com
+          jwk-set-uri: https://www.sampleissuerapi.com/oauth2/v1/certs
+          audiences: kinesheet
+  jpa:
+    hibernate:
+      ddl-auto: none
