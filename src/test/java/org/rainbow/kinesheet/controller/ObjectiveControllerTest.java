@@ -1,6 +1,9 @@
 package org.rainbow.kinesheet.controller;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,5 +61,28 @@ class ObjectiveControllerTest {
 
 		mvc.perform(get(path).header("Authorization", "Bearer " + token)).andExpect(status().isNotFound());
 	}
-	
+
+	@Test
+	@WithMockUser(username = "user1")
+	void create_RequestIsValid_SaveObjective() throws Exception {
+		String path = "/objectives";
+		String token = jwtTokenGenerator.generate();
+
+		String location = mvc.perform(post(path).header("Authorization", "Bearer " + token)
+				.with(csrf())
+				.contentType("application/json")
+				.content("""
+							{
+								"title": "Upgrade to Java 21"
+							}
+						"""))
+				.andExpect(status().isCreated())
+				.andExpect(header().exists("Location"))
+				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"))
+				.andReturn().getResponse().getHeader("Location");
+
+		mvc.perform(get(location).header("Authorization", "Bearer " + token)).andExpect(status().isOk())
+				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"));
+	}
+
 }
