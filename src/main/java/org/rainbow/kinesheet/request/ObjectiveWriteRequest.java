@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class CreateObjectiveRequest {
+public class ObjectiveWriteRequest {
 
     public static final String TITLE_REQUIRED_MESSAGE = "The title cannot be blank";
 

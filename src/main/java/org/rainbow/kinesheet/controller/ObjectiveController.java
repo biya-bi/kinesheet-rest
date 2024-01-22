@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.rainbow.kinesheet.model.Objective;
 import org.rainbow.kinesheet.repository.ObjectiveRepository;
-import org.rainbow.kinesheet.request.CreateObjectiveRequest;
+import org.rainbow.kinesheet.request.ObjectiveWriteRequest;
 import org.rainbow.kinesheet.service.AchieverService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -34,7 +34,7 @@ class ObjectiveController {
     }
 
     @PostMapping
-    ResponseEntity<Objective> create(@Valid @RequestBody CreateObjectiveRequest request, UriComponentsBuilder ucb) {
+    ResponseEntity<Objective> create(@Valid @RequestBody ObjectiveWriteRequest request, UriComponentsBuilder ucb) {
         Objective newObjective = new Objective();
 
         newObjective.setAchiever(achieverService.getCurrent());

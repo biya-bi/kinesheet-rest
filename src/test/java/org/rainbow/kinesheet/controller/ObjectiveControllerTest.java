@@ -13,7 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.rainbow.kinesheet.config.JwtTestConfiguration;
 import org.rainbow.kinesheet.jwt.JwtGenerator;
-import org.rainbow.kinesheet.request.CreateObjectiveRequest;
+import org.rainbow.kinesheet.request.ObjectiveWriteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -71,7 +71,7 @@ class ObjectiveControllerTest {
 				.contentType("application/json")
 				.content(payload))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$..title").value(CreateObjectiveRequest.TITLE_REQUIRED_MESSAGE));
+				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class ObjectiveControllerTest {
 				.contentType("application/json")
 				.content(payload))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$..title").value(CreateObjectiveRequest.TITLE_REQUIRED_MESSAGE));
+				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class ObjectiveControllerTest {
 				.contentType("application/json")
 				.content(payload))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$..title").value(CreateObjectiveRequest.TITLE_REQUIRED_MESSAGE));
+				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
 	}
 
 	@Test
