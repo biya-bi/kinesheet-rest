@@ -7,9 +7,7 @@ import org.rainbow.kinesheet.model.Objective;
 import org.rainbow.kinesheet.repository.ObjectiveRepository;
 import org.rainbow.kinesheet.request.ObjectiveWriteRequest;
 import org.rainbow.kinesheet.service.AchieverService;
-import org.rainbow.kinesheet.service.ObjectiveService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,13 +26,11 @@ import jakarta.validation.Valid;
 class ObjectiveController {
 
     private final ObjectiveRepository objectiveRepository;
-    private final ObjectiveService objectiveService;
     private final AchieverService achieverService;
 
-    ObjectiveController(ObjectiveService objectiveService, ObjectiveRepository objectiveRepository,
+    ObjectiveController(ObjectiveRepository objectiveRepository,
             AchieverService achieverService) {
         this.objectiveRepository = objectiveRepository;
-        this.objectiveService = objectiveService;
         this.achieverService = achieverService;
     }
 
@@ -56,7 +52,7 @@ class ObjectiveController {
     @PutMapping("/{id}")
     ResponseEntity<Objective> update(@Valid @RequestBody ObjectiveWriteRequest request, @PathVariable UUID id,
             UriComponentsBuilder ucb) {
-        Objective existingObjective = objectiveService.findById(id);
+        Objective existingObjective = objectiveRepository.findById(id).orElse(null);
 
         if (existingObjective == null) {
             return ResponseEntity.notFound().build();
@@ -75,7 +71,6 @@ class ObjectiveController {
         return ResponseEntity.ok().body(objectiveRepository.findAll());
     }
 
-    @PostAuthorize("returnObject.body == null || returnObject.body.achiever.email == authentication.tokenAttributes['email']")
     @GetMapping("/{id}")
     ResponseEntity<Objective> findById(@PathVariable UUID id) {
         return objectiveRepository.findById(id).map(ResponseEntity::ok)
