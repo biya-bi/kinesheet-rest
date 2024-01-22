@@ -5,7 +5,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.List;
 
-import org.rainbow.kinesheet.jwt.JwtTokenGenerator;
+import org.rainbow.kinesheet.jwt.JwtGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -37,16 +37,16 @@ public class JwtTestConfiguration {
     @Bean
     JwtDecoder jwtDecoder(@Value("classpath:authz.pub") RSAPublicKey publicKey) {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey).build();
-        OAuth2TokenValidator<Jwt> issuerValidator = JwtValidators.createDefaultWithIssuer(JwtTokenGenerator.ISSUER);
+        OAuth2TokenValidator<Jwt> issuerValidator = JwtValidators.createDefaultWithIssuer(JwtGenerator.ISSUER);
         OAuth2TokenValidator<Jwt> audienceValidator = new JwtClaimValidator<List<Object>>(JwtClaimNames.AUD,
-                aud -> !Collections.disjoint(aud, Collections.singleton(JwtTokenGenerator.AUDIENCE)));
+                aud -> !Collections.disjoint(aud, Collections.singleton(JwtGenerator.AUDIENCE)));
         jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(issuerValidator, audienceValidator));
         return jwtDecoder;
     }
 
     @Bean
-    JwtTokenGenerator jwtTokenGenerator(JwtEncoder JwtEncoder) {
-        return new JwtTokenGenerator(JwtEncoder);
+    JwtGenerator jwtGenerator(JwtEncoder JwtEncoder) {
+        return new JwtGenerator(JwtEncoder);
     }
 
 }

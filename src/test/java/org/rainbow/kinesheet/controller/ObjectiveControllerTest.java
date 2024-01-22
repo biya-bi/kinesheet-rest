@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.rainbow.kinesheet.config.JwtTestConfiguration;
-import org.rainbow.kinesheet.jwt.JwtTokenGenerator;
+import org.rainbow.kinesheet.jwt.JwtGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,14 +25,14 @@ class ObjectiveControllerTest {
 	private MockMvc mvc;
 
 	@Autowired
-	private JwtTokenGenerator jwtTokenGenerator;
+	private JwtGenerator jwtGenerator;
 
 	@Test
 	@WithMockUser(username = "user1")
 	void findById_ObjectiveBelongsToRequester_ReturnObjective() throws Exception {
 		String id = "350bebae-d54f-4e60-a2c8-77a0778e1c5b";
 		String path = "/objectives/" + id;
-		String token = jwtTokenGenerator.generate();
+		String token = jwtGenerator.generate();
 
 		mvc.perform(setBearerHeader(get(path), token))
 				.andExpect(status().isOk())
@@ -47,7 +47,7 @@ class ObjectiveControllerTest {
 		// user1@company.com. So we should get a 403 if user2 requests for it.
 		String id = "350bebae-d54f-4e60-a2c8-77a0778e1c5b";
 		String path = "/objectives/" + id;
-		String token = jwtTokenGenerator
+		String token = jwtGenerator
 				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
 
 		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isForbidden());
@@ -58,7 +58,7 @@ class ObjectiveControllerTest {
 	void findById_ObjectiveDoesNotExit_Return404() throws Exception {
 		String id = "bdbd694c-d820-4f9f-a409-17210ce53038";
 		String path = "/objectives/" + id;
-		String token = jwtTokenGenerator.generate();
+		String token = jwtGenerator.generate();
 
 		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isNotFound());
 	}
@@ -67,7 +67,7 @@ class ObjectiveControllerTest {
 	@WithMockUser(username = "user1")
 	void create_RequestIsValid_SaveObjective() throws Exception {
 		String path = "/objectives";
-		String token = jwtTokenGenerator.generate();
+		String token = jwtGenerator.generate();
 
 		String location = mvc.perform(setBearerHeader(post(path), token)
 				.with(csrf())

@@ -8,14 +8,14 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 
-public class JwtTokenGenerator {
+public class JwtGenerator {
 
     public static final String ISSUER = "http://localhost:9000";
     public static final String AUDIENCE = "kinesheet";
 
     private final JwtEncoder jwtEncoder;
 
-    public JwtTokenGenerator(JwtEncoder jwtEncoder) {
+    public JwtGenerator(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
     }
 
