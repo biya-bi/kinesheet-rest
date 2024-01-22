@@ -4,6 +4,7 @@ import static org.rainbow.kinesheet.util.RequestUtil.setBearerHeader;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -103,6 +104,98 @@ class ObjectiveControllerTest {
 				.content(payload))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@WithMockUser(username = "user2")
+	void update_RequestIsValid_ReturnOk() throws Exception {
+		String id = "04397fe3-772d-4424-881d-0863f0a5bbbf";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
+		String title = "Do researches on General Relativity";
+		String payload = getRequestPayload(title);
+
+		mvc.perform(setBearerHeader(put(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$..title").value(title));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "", " " })
+	@WithMockUser(username = "user2")
+	void update_TitleIsBlank_ReturnBadRequest(String title) throws Exception {
+		String id = "04397fe3-772d-4424-881d-0863f0a5bbbf";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
+
+		String payload = getRequestPayload(title);
+
+		mvc.perform(setBearerHeader(put(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@WithMockUser(username = "user2")
+	void update_TitleIsNull_ReturnBadRequest() throws Exception {
+		String id = "04397fe3-772d-4424-881d-0863f0a5bbbf";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
+
+		String payload = getRequestPayload(null);
+
+		mvc.perform(setBearerHeader(put(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@WithMockUser(username = "user2")
+	void update_TitleIsMissing_ReturnBadRequest() throws Exception {
+		String id = "04397fe3-772d-4424-881d-0863f0a5bbbf";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
+
+		String payload = "{}";
+
+		mvc.perform(setBearerHeader(put(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$..title").value(ObjectiveWriteRequest.TITLE_REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@WithMockUser(username = "user2")
+	void update_ObjectiveIsMissing_ReturnNotFound() throws Exception {
+		// There is no objective with this id. So we expect a 404.
+		String id = "b2e246e0-6d6e-46c5-811c-1005d27e9ea9";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
+
+		String title = "Do researches on General Relativity";
+		String payload = getRequestPayload(title);
+
+		mvc.perform(setBearerHeader(put(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
