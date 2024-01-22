@@ -1,5 +1,6 @@
 package org.rainbow.kinesheet.controller;
 
+import static org.rainbow.kinesheet.util.RequestUtil.setBearerHeader;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,7 +34,7 @@ class ObjectiveControllerTest {
 		String path = "/objectives/" + id;
 		String token = jwtTokenGenerator.generate();
 
-		mvc.perform(get(path).header("Authorization", "Bearer " + token))
+		mvc.perform(setBearerHeader(get(path), token))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(id))
 				.andExpect(jsonPath("$.title").value("Read Heavenly Mathematics"));
@@ -49,7 +50,7 @@ class ObjectiveControllerTest {
 		String token = jwtTokenGenerator
 				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
 
-		mvc.perform(get(path).header("Authorization", "Bearer " + token)).andExpect(status().isForbidden());
+		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -59,7 +60,7 @@ class ObjectiveControllerTest {
 		String path = "/objectives/" + id;
 		String token = jwtTokenGenerator.generate();
 
-		mvc.perform(get(path).header("Authorization", "Bearer " + token)).andExpect(status().isNotFound());
+		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -68,7 +69,7 @@ class ObjectiveControllerTest {
 		String path = "/objectives";
 		String token = jwtTokenGenerator.generate();
 
-		String location = mvc.perform(post(path).header("Authorization", "Bearer " + token)
+		String location = mvc.perform(setBearerHeader(post(path), token)
 				.with(csrf())
 				.contentType("application/json")
 				.content("""
@@ -81,7 +82,7 @@ class ObjectiveControllerTest {
 				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"))
 				.andReturn().getResponse().getHeader("Location");
 
-		mvc.perform(get(location).header("Authorization", "Bearer " + token)).andExpect(status().isOk())
+		mvc.perform(setBearerHeader(get(location), token)).andExpect(status().isOk())
 				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"));
 	}
 
