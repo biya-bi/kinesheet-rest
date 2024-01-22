@@ -9,8 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.rainbow.kinesheet.config.JwtTestConfiguration;
 import org.rainbow.kinesheet.jwt.JwtGenerator;
+import org.rainbow.kinesheet.request.CreateObjectiveRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,6 +51,63 @@ class ObjectiveControllerTest {
 
 		mvc.perform(setBearerHeader(get(location), token)).andExpect(status().isOk())
 				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "", "   " })
+	@WithMockUser(username = "user1")
+	void create_TitleIsBlank_ReturnBadRequest(String title) throws Exception {
+		String path = "/objectives";
+		String token = jwtGenerator.generate();
+
+		String payload = """
+					{
+						"title": "%s"
+					}
+				""".formatted(title);
+
+		mvc.perform(setBearerHeader(post(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$..title").value(CreateObjectiveRequest.TITLE_REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@WithMockUser(username = "user1")
+	void create_TitleIsNull_ReturnBadRequest() throws Exception {
+		String path = "/objectives";
+		String token = jwtGenerator.generate();
+
+		String payload = """
+					{
+						"title": null
+					}
+				""";
+
+		mvc.perform(setBearerHeader(post(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$..title").value(CreateObjectiveRequest.TITLE_REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@WithMockUser(username = "user1")
+	void create_TitleIsMissing_ReturnBadRequest() throws Exception {
+		String path = "/objectives";
+		String token = jwtGenerator.generate();
+
+		String payload = "{}";
+
+		mvc.perform(setBearerHeader(post(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content(payload))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$..title").value(CreateObjectiveRequest.TITLE_REQUIRED_MESSAGE));
 	}
 
 	@Test

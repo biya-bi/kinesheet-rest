@@ -9,6 +9,7 @@ import org.rainbow.kinesheet.request.CreateObjectiveRequest;
 import org.rainbow.kinesheet.service.AchieverService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/objectives")
+@Validated
 class ObjectiveController {
 
     private final ObjectiveRepository objectiveRepository;
@@ -30,7 +34,7 @@ class ObjectiveController {
     }
 
     @PostMapping
-    ResponseEntity<Objective> create(@RequestBody CreateObjectiveRequest request, UriComponentsBuilder ucb) {
+    ResponseEntity<Objective> create(@Valid @RequestBody CreateObjectiveRequest request, UriComponentsBuilder ucb) {
         Objective newObjective = new Objective();
 
         newObjective.setAchiever(achieverService.getCurrent());
