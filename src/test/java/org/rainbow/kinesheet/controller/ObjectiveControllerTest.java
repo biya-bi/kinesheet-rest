@@ -29,6 +29,29 @@ class ObjectiveControllerTest {
 
 	@Test
 	@WithMockUser(username = "user1")
+	void create_RequestIsValid_SaveObjective() throws Exception {
+		String path = "/objectives";
+		String token = jwtGenerator.generate();
+
+		String location = mvc.perform(setBearerHeader(post(path), token)
+				.with(csrf())
+				.contentType("application/json")
+				.content("""
+							{
+								"title": "Upgrade to Java 21"
+							}
+						"""))
+				.andExpect(status().isCreated())
+				.andExpect(header().exists("Location"))
+				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"))
+				.andReturn().getResponse().getHeader("Location");
+
+		mvc.perform(setBearerHeader(get(location), token)).andExpect(status().isOk())
+				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"));
+	}
+
+	@Test
+	@WithMockUser(username = "user1")
 	void findById_ObjectiveBelongsToRequester_ReturnObjective() throws Exception {
 		String id = "350bebae-d54f-4e60-a2c8-77a0778e1c5b";
 		String path = "/objectives/" + id;
@@ -61,29 +84,6 @@ class ObjectiveControllerTest {
 		String token = jwtGenerator.generate();
 
 		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isNotFound());
-	}
-
-	@Test
-	@WithMockUser(username = "user1")
-	void create_RequestIsValid_SaveObjective() throws Exception {
-		String path = "/objectives";
-		String token = jwtGenerator.generate();
-
-		String location = mvc.perform(setBearerHeader(post(path), token)
-				.with(csrf())
-				.contentType("application/json")
-				.content("""
-							{
-								"title": "Upgrade to Java 21"
-							}
-						"""))
-				.andExpect(status().isCreated())
-				.andExpect(header().exists("Location"))
-				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"))
-				.andReturn().getResponse().getHeader("Location");
-
-		mvc.perform(setBearerHeader(get(location), token)).andExpect(status().isOk())
-				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"));
 	}
 
 }
