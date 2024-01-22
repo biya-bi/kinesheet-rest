@@ -3,7 +3,6 @@ package org.rainbow.kinesheet.controller;
 import java.net.URI;
 import java.util.UUID;
 
-import org.rainbow.kinesheet.model.Achiever;
 import org.rainbow.kinesheet.model.Objective;
 import org.rainbow.kinesheet.repository.ObjectiveRepository;
 import org.rainbow.kinesheet.request.CreateObjectiveRequest;
@@ -32,11 +31,9 @@ class ObjectiveController {
 
     @PostMapping
     ResponseEntity<Objective> create(@RequestBody CreateObjectiveRequest request, UriComponentsBuilder ucb) {
-        Achiever achiever = achieverService.getCurrent();
-
         Objective newObjective = new Objective();
 
-        newObjective.setAchiever(achiever);
+        newObjective.setAchiever(achieverService.getCurrent());
         newObjective.setTitle(request.getTitle());
 
         Objective savedObjective = objectiveRepository.save(newObjective);
@@ -54,7 +51,7 @@ class ObjectiveController {
 
     @PostAuthorize("returnObject.body == null || returnObject.body.achiever.email == authentication.tokenAttributes['email']")
     @GetMapping("/{id}")
-    public ResponseEntity<Objective> findById(@PathVariable UUID id) {
+    ResponseEntity<Objective> findById(@PathVariable UUID id) {
         return objectiveRepository.findById(id).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
