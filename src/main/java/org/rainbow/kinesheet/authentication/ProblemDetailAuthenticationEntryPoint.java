@@ -30,13 +30,13 @@ class ProblemDetailAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException, ServletException {
-        this.delegate.commence(request, response, exception);
+        delegate.commence(request, response, exception);
         if (exception.getCause() instanceof JwtValidationException validation) {
             ProblemDetail detail = ProblemDetail.forStatus(401);
             detail.setType(URI.create("https://tools.ietf.org/html/rfc6750#section-3.1"));
             detail.setTitle("Invalid Token");
             detail.setProperty("errors", validation.getErrors());
-            this.mapper.writeValue(response.getWriter(), detail);
+            mapper.writeValue(response.getWriter(), detail);
         }
     }
 
