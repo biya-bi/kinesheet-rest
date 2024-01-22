@@ -24,6 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class ObjectiveControllerTest {
 
+	private final static String WRITE_REQUEST_TEMPLATE = """
+			{
+				"title": "$title"
+			}""";
+
 	@Autowired
 	private MockMvc mvc;
 
@@ -35,22 +40,20 @@ class ObjectiveControllerTest {
 	void create_RequestIsValid_SaveObjective() throws Exception {
 		String path = "/objectives";
 		String token = jwtGenerator.generate();
+		String title = "Upgrade to Java 21";
+		String payload = getRequestPayload(title);
 
 		String location = mvc.perform(setBearerHeader(post(path), token)
 				.with(csrf())
 				.contentType("application/json")
-				.content("""
-							{
-								"title": "Upgrade to Java 21"
-							}
-						"""))
+				.content(payload))
 				.andExpect(status().isCreated())
 				.andExpect(header().exists("Location"))
-				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"))
+				.andExpect(jsonPath("$..title").value(title))
 				.andReturn().getResponse().getHeader("Location");
 
 		mvc.perform(setBearerHeader(get(location), token)).andExpect(status().isOk())
-				.andExpect(jsonPath("$..title").value("Upgrade to Java 21"));
+				.andExpect(jsonPath("$..title").value(title));
 	}
 
 	@ParameterizedTest
@@ -60,11 +63,7 @@ class ObjectiveControllerTest {
 		String path = "/objectives";
 		String token = jwtGenerator.generate();
 
-		String payload = """
-					{
-						"title": "%s"
-					}
-				""".formatted(title);
+		String payload = getRequestPayload(title);
 
 		mvc.perform(setBearerHeader(post(path), token)
 				.with(csrf())
@@ -80,11 +79,7 @@ class ObjectiveControllerTest {
 		String path = "/objectives";
 		String token = jwtGenerator.generate();
 
-		String payload = """
-					{
-						"title": null
-					}
-				""";
+		String payload = getRequestPayload(null);
 
 		mvc.perform(setBearerHeader(post(path), token)
 				.with(csrf())
@@ -146,4 +141,20 @@ class ObjectiveControllerTest {
 		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isNotFound());
 	}
 
+	private String getRequestPayload(String title) {
+		return replace(WRITE_REQUEST_TEMPLATE, "$title", title);
+	}
+
+	private String replace(String template, String placeHolder, String value) {
+		String target;
+		String replacement;
+		if (value != null) {
+			target = placeHolder;
+			replacement = value;
+		} else {
+			target = String.format("\"%s\"", placeHolder);
+			replacement = "null";
+		}
+		return template.replace(target, replacement);
+	}
 }
