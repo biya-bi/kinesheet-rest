@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 class AchieverServiceImpl implements AchieverService {
 
     private static final String CACHE_NAME = "Achievers";
-    private static final String CACHE_KEY = "T(org.rainbow.kinesheet.authentication.Session).getEmail()";
+    private static final String CACHE_KEY = "T(org.rainbow.kinesheet.authentication.Session).claims.email";
 
     private final AchieverRepository achieverRepository;
 
@@ -22,13 +22,13 @@ class AchieverServiceImpl implements AchieverService {
     @Cacheable(value = CACHE_NAME, key = CACHE_KEY)
     @Override
     public Achiever getCurrent() {
-        var tokenAttributes = Session.getAuthentication().getTokenAttributes();
-        var email = (String) tokenAttributes.get("email");
+        var claims = Session.getClaims();
+        var email = claims.getEmail();
         var achiever = achieverRepository.findByEmail(email);
         if (achiever != null) {
             return achiever;
         }
-        var name = (String) tokenAttributes.get("name");
+        var name = claims.getName();
         achiever = new Achiever();
         achiever.setEmail(email);
         achiever.setName(name);

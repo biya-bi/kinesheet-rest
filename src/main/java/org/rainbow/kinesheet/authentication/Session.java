@@ -12,17 +12,18 @@ public final class Session {
 
     public static boolean isCurrent(Achiever achiever) {
         if (achiever != null) {
-            return StringUtils.trimToEmpty(getEmail()).equalsIgnoreCase(achiever.getEmail());
+            var email = getClaims().getEmail();
+            return StringUtils.trimToEmpty(email).equalsIgnoreCase(achiever.getEmail());
         }
         return false;
     }
 
-    public static JwtAuthenticationToken getAuthentication() {
-        return (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-    }
-
-    public static String getEmail() {
-        return (String) getAuthentication().getTokenAttributes().get("email");
+    public static Claims getClaims() {
+        var authentication = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        var tokenAttributes = authentication.getTokenAttributes();
+        var email = (String) tokenAttributes.get("email");
+        var name = (String) tokenAttributes.get("name");
+        return Claims.builder().email(email).name(name).build();
     }
 
 }
