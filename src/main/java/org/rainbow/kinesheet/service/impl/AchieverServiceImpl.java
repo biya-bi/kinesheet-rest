@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 class AchieverServiceImpl implements AchieverService, TokenService {
 
     private static final String CACHE_NAME = "Achievers";
-    private static final String CACHE_KEY = "#root.target.token.tokenAttributes['email']";
+    private static final String CACHE_KEY = "#root.target.authentication.tokenAttributes['email']";
 
     private final AchieverRepository achieverRepository;
 
@@ -21,7 +21,7 @@ class AchieverServiceImpl implements AchieverService, TokenService {
     @Cacheable(value = CACHE_NAME, key = CACHE_KEY)
     @Override
     public Achiever getCurrent() {
-        var tokenAttributes = getToken().getTokenAttributes();
+        var tokenAttributes = getAuthentication().getTokenAttributes();
         var email = (String) tokenAttributes.get("email");
         var achiever = achieverRepository.findByEmail(email);
         if (achiever != null) {

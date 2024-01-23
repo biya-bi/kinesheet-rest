@@ -5,7 +5,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 public interface TokenService {
 
-    public default JwtAuthenticationToken getToken() {
+    public default JwtAuthenticationToken getAuthentication() {
         return (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
     }
 
