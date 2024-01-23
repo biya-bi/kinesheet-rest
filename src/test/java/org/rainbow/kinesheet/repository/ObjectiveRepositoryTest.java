@@ -1,12 +1,17 @@
 package org.rainbow.kinesheet.repository;
 
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +57,21 @@ class ObjectiveRepositoryTest {
         UUID id = UUID.fromString("04397fe3-772d-4424-881d-0863f0a5bbbf");
 
         assertThrows(AccessDeniedException.class, () -> objectiveRepository.findById(id));
+    }
+
+    @Test
+    void findAll_ManyAchieversHaveSetObjectives_ReturnCurrentAchieverObjectives() {
+        String email = "user1@company.com";
+
+        when(authentication.getTokenAttributes()).thenReturn(Collections.singletonMap("email", email));
+
+        Iterable<Objective> objectives = objectiveRepository.findAll();
+
+        List<String> emails = StreamSupport.stream(objectives.spliterator(), false)
+                .map(objective -> objective.getAchiever().getEmail()).distinct().collect(Collectors.toList());
+
+        // Assert that all the objectives returned were set by the same achiever
+        assertIterableEquals(Arrays.asList(email), emails);
     }
 
 }
