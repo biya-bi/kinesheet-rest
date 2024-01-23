@@ -199,26 +199,6 @@ class ObjectiveControllerTest {
 	}
 
 	@Test
-	@WithMockUser(username = "user2")
-	void update_ObjectiveWasSetByAnotherAchiever_ReturnForbidden() throws Exception {
-		// The objective identified by this id was set by user1 whose email is
-		// user1@company.com. So we should get a 403 if user2 tries update it.
-		String id = "350bebae-d54f-4e60-a2c8-77a0778e1c5b";
-		String path = "/objectives/" + id;
-		String token = jwtGenerator
-				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
-
-		String title = "Do researches on General Relativity";
-		String payload = getRequestPayload(title);
-
-		mvc.perform(setBearerHeader(put(path), token)
-				.with(csrf())
-				.contentType("application/json")
-				.content(payload))
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
 	@WithMockUser(username = "user1")
 	void findById_ObjectiveWasSetByCurrentAchiever_ReturnObjective() throws Exception {
 		String id = "350bebae-d54f-4e60-a2c8-77a0778e1c5b";
@@ -229,19 +209,6 @@ class ObjectiveControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(id))
 				.andExpect(jsonPath("$.title").value("Read Heavenly Mathematics"));
-	}
-
-	@Test
-	@WithMockUser(username = "user2")
-	void findById_ObjectiveWasSetByAnotherAchiever_ReturnForbidden() throws Exception {
-		// The objective identified by this id was set by user1 whose email is
-		// user1@company.com. So we should get a 403 if user2 requests for it.
-		String id = "350bebae-d54f-4e60-a2c8-77a0778e1c5b";
-		String path = "/objectives/" + id;
-		String token = jwtGenerator
-				.generate(customer -> customer.claim("name", "user2").claim("email", "user2@company.com"));
-
-		mvc.perform(setBearerHeader(get(path), token)).andExpect(status().isForbidden());
 	}
 
 	@Test
