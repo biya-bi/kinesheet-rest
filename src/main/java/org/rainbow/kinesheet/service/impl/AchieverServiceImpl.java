@@ -1,9 +1,9 @@
 package org.rainbow.kinesheet.service.impl;
 
+import org.rainbow.kinesheet.authentication.Session;
 import org.rainbow.kinesheet.model.Achiever;
 import org.rainbow.kinesheet.repository.AchieverRepository;
 import org.rainbow.kinesheet.service.AchieverService;
-import org.rainbow.kinesheet.session.Session;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 class AchieverServiceImpl implements AchieverService {
 
     private static final String CACHE_NAME = "Achievers";
-    private static final String CACHE_KEY = "T(org.rainbow.kinesheet.session.Session).getId()";
+    private static final String CACHE_KEY = "T(org.rainbow.kinesheet.authentication.Session).getEmail()";
 
     private final AchieverRepository achieverRepository;
 
