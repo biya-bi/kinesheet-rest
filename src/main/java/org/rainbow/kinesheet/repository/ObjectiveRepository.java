@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 
 public interface ObjectiveRepository extends CrudRepository<Objective, UUID> {
 
-    @PostAuthorize("returnObject.isEmpty() || returnObject.get().achiever.email.equalsIgnoreCase(authentication.tokenAttributes['email'])")
+    @PostAuthorize("returnObject.isEmpty() || T(org.rainbow.kinesheet.session.Session).isCurrent(returnObject.get().achiever)")
     Optional<Objective> findById(UUID id);
 
     @Query("select o from Objective o where o.achiever.email = :#{authentication.tokenAttributes['email']}")
