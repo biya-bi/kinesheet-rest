@@ -21,6 +21,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
 
+/**
+ * Represents the controller used for servicing REST requests about objectives.
+ * 
+ * The methods of this class that require accessing existing {@link Objective}s
+ * are secure since security has been achieved at the level of the
+ * {@link ObjectiveRepository}.
+ */
 @RestController
 @RequestMapping("/objectives")
 @Validated
@@ -51,8 +58,7 @@ class ObjectiveController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<Objective> update(@Valid @RequestBody ObjectiveWriteRequest request, @PathVariable UUID id,
-            UriComponentsBuilder ucb) {
+    ResponseEntity<Objective> update(@Valid @RequestBody ObjectiveWriteRequest request, @PathVariable UUID id) {
         Objective existingObjective = objectiveRepository.findById(id).orElse(null);
 
         if (existingObjective == null) {
