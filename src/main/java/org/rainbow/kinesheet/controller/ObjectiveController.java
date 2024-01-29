@@ -9,6 +9,7 @@ import org.rainbow.kinesheet.request.ObjectiveWriteRequest;
 import org.rainbow.kinesheet.service.AchieverService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +65,19 @@ class ObjectiveController {
         Objective savedObjective = objectiveRepository.save(existingObjective);
 
         return ResponseEntity.ok(savedObjective);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> delete(@PathVariable UUID id) {
+        Objective objective = objectiveRepository.findById(id).orElse(null);
+
+        if (objective == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        objectiveRepository.delete(objective);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping

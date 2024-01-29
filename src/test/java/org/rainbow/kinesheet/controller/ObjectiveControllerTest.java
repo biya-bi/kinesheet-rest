@@ -2,6 +2,7 @@ package org.rainbow.kinesheet.controller;
 
 import static org.rainbow.kinesheet.util.RequestUtil.setBearerHeader;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -195,6 +196,39 @@ class ObjectiveControllerTest {
 				.with(csrf())
 				.contentType("application/json")
 				.content(payload))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(username = "user3")
+	void delete_ObjectiveExists_ReturnOk() throws Exception {
+		String id = "ae9fdde2-6b6d-4bb9-b7c2-2ff27308472a";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user3").claim("email", "user3@company.com"));
+
+		mvc.perform(setBearerHeader(delete(path), token)
+				.with(csrf())
+				.contentType("application/json"))
+				.andExpect(status().isOk());
+
+		mvc.perform(setBearerHeader(get(path), token)
+				.with(csrf())
+				.contentType("application/json"))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(username = "user3")
+	void delete_ObjectiveDoesNotExist_ReturnNotFound() throws Exception {
+		String id = "bdc91996-6245-4483-9955-d7133bcf23db";
+		String path = "/objectives/" + id;
+		String token = jwtGenerator
+				.generate(customer -> customer.claim("name", "user3").claim("email", "user3@company.com"));
+
+		mvc.perform(setBearerHeader(delete(path), token)
+				.with(csrf())
+				.contentType("application/json"))
 				.andExpect(status().isNotFound());
 	}
 
