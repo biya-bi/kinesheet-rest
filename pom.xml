@@ -19,6 +19,10 @@
 		<hazelcast.version>4.2.8</hazelcast.version>
 		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
+		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
+		<nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
+		<kinesheet-model.version>0.0.1-SNAPSHOT</kinesheet-model.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -76,6 +80,24 @@
 		</dependency>
 
 		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>${jakarta.servlet-api.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>${nimbus-jose-jwt.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.rainbow</groupId>
+			<artifactId>kinesheet-model</artifactId>
+			<version>${kinesheet-model.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -92,6 +114,21 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<release>${java.version}</release>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
