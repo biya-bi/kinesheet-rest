@@ -16,6 +16,7 @@ public final class ObjectiveTranslator {
     }
 
     public static Objective translate(ObjectiveDto dto, Objective objective) {
+        objective.setId(dto.getId());
         objective.setTitle(dto.getTitle());
         objective.setAsOf(LocalDateTime.ofEpochSecond(dto.getAsOf(), 0, ZoneOffset.UTC));
         objective.setDeadline(LocalDateTime.ofEpochSecond(dto.getDeadline(), 0, ZoneOffset.UTC));

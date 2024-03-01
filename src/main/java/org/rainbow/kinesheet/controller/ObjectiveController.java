@@ -50,6 +50,9 @@ class ObjectiveController {
     ResponseEntity<Objective> create(@Valid @RequestBody ObjectiveDto dto, UriComponentsBuilder ucb) {
         Objective newObjective = ObjectiveTranslator.translate(dto);
 
+        // IDs are auto-generated in the data access layer. So we need to make sure that
+        // the ID on the new objective is null.
+        newObjective.setId(null);
         newObjective.setAchiever(achieverService.getCurrent());
 
         Objective savedObjective = objectiveRepository.save(newObjective);
@@ -98,7 +101,8 @@ class ObjectiveController {
 
     @GetMapping("/{id}")
     ResponseEntity<ObjectiveDto> findById(@PathVariable UUID id) {
-        return objectiveRepository.findById(id).map(objective -> ResponseEntity.ok(ObjectiveTranslator.translate(objective)))
+        return objectiveRepository.findById(id)
+                .map(objective -> ResponseEntity.ok(ObjectiveTranslator.translate(objective)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
