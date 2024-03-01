@@ -4,12 +4,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.rainbow.kinesheet.dto.ObjectiveDto;
 import org.rainbow.kinesheet.model.Objective;
 import org.rainbow.kinesheet.repository.ObjectiveRepository;
-import org.rainbow.kinesheet.request.ObjectiveWriteRequest;
 import org.rainbow.kinesheet.service.AchieverService;
 import org.rainbow.kinesheet.translator.ObjectiveTranslator;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +47,8 @@ class ObjectiveController {
     }
 
     @PostMapping
-    ResponseEntity<Objective> create(@Valid @RequestBody ObjectiveWriteRequest request, UriComponentsBuilder ucb) {
-        Objective newObjective = ObjectiveTranslator.from(request);
+    ResponseEntity<Objective> create(@Valid @RequestBody ObjectiveDto dto, UriComponentsBuilder ucb) {
+        Objective newObjective = ObjectiveTranslator.translate(dto);
 
         newObjective.setAchiever(achieverService.getCurrent());
 
@@ -62,7 +61,7 @@ class ObjectiveController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ObjectiveWriteRequest> update(@Valid @RequestBody ObjectiveWriteRequest request,
+    ResponseEntity<ObjectiveDto> update(@Valid @RequestBody ObjectiveDto dto,
             @PathVariable UUID id) {
         Objective existingObjective = objectiveRepository.findById(id).orElse(null);
 
@@ -70,11 +69,11 @@ class ObjectiveController {
             return ResponseEntity.notFound().build();
         }
 
-        ObjectiveTranslator.from(request, existingObjective);
+        ObjectiveTranslator.translate(dto, existingObjective);
 
         Objective savedObjective = objectiveRepository.save(existingObjective);
 
-        return ResponseEntity.ok(ObjectiveTranslator.to(savedObjective));
+        return ResponseEntity.ok(ObjectiveTranslator.translate(savedObjective));
     }
 
     @DeleteMapping("/{id}")
@@ -91,15 +90,15 @@ class ObjectiveController {
     }
 
     @GetMapping
-    ResponseEntity<Iterable<ObjectiveWriteRequest>> findAll() {
-        List<ObjectiveWriteRequest> dtos = StreamSupport.stream(objectiveRepository.findAll().spliterator(), false)
-                .map(ObjectiveTranslator::to).collect(Collectors.toList());
+    ResponseEntity<Iterable<ObjectiveDto>> findAll() {
+        List<ObjectiveDto> dtos = StreamSupport.stream(objectiveRepository.findAll().spliterator(), false)
+                .map(ObjectiveTranslator::translate).collect(Collectors.toList());
         return ResponseEntity.ok().body(dtos);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ObjectiveWriteRequest> findById(@PathVariable UUID id) {
-        return objectiveRepository.findById(id).map(objective -> ResponseEntity.ok(ObjectiveTranslator.to(objective)))
+    ResponseEntity<ObjectiveDto> findById(@PathVariable UUID id) {
+        return objectiveRepository.findById(id).map(objective -> ResponseEntity.ok(ObjectiveTranslator.translate(objective)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

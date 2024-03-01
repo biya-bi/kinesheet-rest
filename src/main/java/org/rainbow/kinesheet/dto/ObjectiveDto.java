@@ -1,4 +1,4 @@
-package org.rainbow.kinesheet.request;
+package org.rainbow.kinesheet.dto;
 
 import java.util.UUID;
 
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class ObjectiveWriteRequest {
+public class ObjectiveDto {
 
     public static final String TITLE_REQUIRED_MESSAGE = "The title cannot be blank";
 
